@@ -1,0 +1,1 @@
+"""AmakanoPet application package."""
