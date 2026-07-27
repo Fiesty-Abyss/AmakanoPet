@@ -1,11 +1,22 @@
 """Transparent, frameless desktop pet window."""
 
-from PySide6.QtCore import QPoint, Qt
-from PySide6.QtGui import QColor, QKeyEvent, QMouseEvent, QPainter, QPaintEvent
-from PySide6.QtWidgets import QWidget
+from PySide6.QtCore import QPoint, Qt, Signal
+from PySide6.QtGui import (
+    QColor,
+    QContextMenuEvent,
+    QKeyEvent,
+    QMouseEvent,
+    QPainter,
+    QPaintEvent,
+    QWheelEvent,
+)
+from PySide6.QtWidgets import QMenu, QWidget
 
 from app.config import (
     APP_NAME,
+    MAX_SCALE,
+    MIN_SCALE,
+    SCALE_STEP,
     WINDOW_HEIGHT,
     WINDOW_WIDTH,
     SettingsStore,
@@ -14,6 +25,8 @@ from app.config import (
 
 class PetWindow(QWidget):
     """Minimal always-on-top window that can be dragged around the desktop."""
+
+    quit_requested = Signal()
 
     def __init__(self, settings: SettingsStore | None = None) -> None:
         super().__init__()
@@ -46,6 +59,33 @@ class PetWindow(QWidget):
     def save_window_state(self) -> None:
         self._settings.save_window_state(self.pos(), self._scale)
 
+    def set_scale(self, scale: float) -> None:
+        new_scale = round(min(MAX_SCALE, max(MIN_SCALE, scale)), 1)
+        if new_scale == self._scale:
+            return
+
+        old_center = self.frameGeometry().center()
+        self._scale = new_scale
+        self._apply_size()
+        self.move(old_center - self.rect().center())
+        self.save_window_state()
+        self.update()
+
+    def show_window(self) -> None:
+        self.show()
+        self.raise_()
+        self.activateWindow()
+
+    def hide_to_tray(self) -> None:
+        self.save_window_state()
+        self.hide()
+
+    def toggle_visibility(self) -> None:
+        if self.isVisible():
+            self.hide_to_tray()
+        else:
+            self.show_window()
+
     def paintEvent(self, event: QPaintEvent) -> None:
         """Draw a simple translucent placeholder until character art is added."""
         painter = QPainter(self)
@@ -58,7 +98,7 @@ class PetWindow(QWidget):
         painter.drawText(
             self.rect(),
             Qt.AlignmentFlag.AlignCenter,
-            f"{APP_NAME}\nDrag me",
+            f"{APP_NAME}\n拖动窗口\nCtrl + 滚轮缩放",
         )
         super().paintEvent(event)
 
@@ -89,6 +129,27 @@ class PetWindow(QWidget):
 
     def keyPressEvent(self, event: QKeyEvent) -> None:
         if event.key() == Qt.Key.Key_Escape:
-            self.close()
+            self.hide_to_tray()
+            event.accept()
             return
         super().keyPressEvent(event)
+
+    def wheelEvent(self, event: QWheelEvent) -> None:
+        if event.modifiers() & Qt.KeyboardModifier.ControlModifier:
+            direction = 1 if event.angleDelta().y() > 0 else -1
+            self.set_scale(self._scale + direction * SCALE_STEP)
+            event.accept()
+            return
+        super().wheelEvent(event)
+
+    def contextMenuEvent(self, event: QContextMenuEvent) -> None:
+        menu = QMenu(self)
+        visibility_action = menu.addAction(
+            "隐藏窗口" if self.isVisible() else "显示窗口"
+        )
+        visibility_action.triggered.connect(self.toggle_visibility)
+        menu.addSeparator()
+        quit_action = menu.addAction("退出")
+        quit_action.triggered.connect(self.quit_requested.emit)
+        menu.exec(event.globalPos())
+        event.accept()

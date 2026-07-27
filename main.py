@@ -13,6 +13,7 @@ def main() -> int:
     app.setApplicationName(APP_NAME)
 
     window = PetWindow()
+    window.quit_requested.connect(app.quit)
     window.show()
     return app.exec()
 
