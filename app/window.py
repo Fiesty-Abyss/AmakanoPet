@@ -7,6 +7,7 @@ from collections.abc import Callable
 from PySide6.QtCore import QPoint, QRectF, Qt, Signal
 from PySide6.QtGui import (
     QContextMenuEvent,
+    QCursor,
     QKeyEvent,
     QMouseEvent,
     QPainter,
@@ -38,7 +39,7 @@ class PetWindow(QWidget):
         super().__init__()
         self._settings = settings or SettingsStore()
         self.renderer = renderer or SpriteRenderer(parent=self)
-        self.renderer.frame_ready.connect(self.update)
+        self.renderer.frame_ready.connect(self._on_frame)
         self._press_pos: QPoint | None = None
         self._drag_offset: QPoint | None = None
         self._dragging = False
@@ -120,6 +121,14 @@ class PetWindow(QWidget):
             self.show_window()
 
     # ---- painting ---------------------------------------------------------
+    def _on_frame(self) -> None:
+        source = self.renderer.source
+        if source.wants_gaze and self.isVisible():
+            pos = self.mapFromGlobal(QCursor.pos())
+            dpr = self.devicePixelRatioF()
+            source.look_at(pos.x() * dpr, pos.y() * dpr)
+        self.update()
+
     def paintEvent(self, event: QPaintEvent) -> None:
         painter = QPainter(self)
         painter.setRenderHint(QPainter.RenderHint.Antialiasing)

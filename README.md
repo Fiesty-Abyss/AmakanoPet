@@ -28,6 +28,7 @@
 | 🍡 **桌宠** | 透明无边框、始终置顶，可拖动、`Ctrl + 滚轮` 缩放；呼吸、上下浮动、随机眨眼，单击会轻轻跳一下 |
 | 🎨 **原创占位形象「糯糯」** | 没有模型时显示的原创团子，完全由代码绘制，围巾与小饰物随季节主题变化 |
 | 📁 **自备模型** | 把自己的立绘放进模型文件夹即可使用，支持闭眼帧、头像、缩放，并可绑定到乐园中的角色 |
+| 🎭 **Live2D（可选）** | 安装 live2d-py 后可以显示自备的 Cubism 2 / 3+ 模型：自带呼吸、眨眼和动作，单击播放动作，视线跟随鼠标 |
 | 🏞️ **乐园** | 作品页签 → 女主角卡片 → 角色资料页：读音、译名、学年、生日、身高、血型、CV、关键词、简介、撒娇方式与来源链接 |
 | ❄️🍁🌻 **季节主题** | 每部作品按舞台季节自动换色：冬・雪国温泉街 / 秋・古都茶屋街 / 夏・海与温泉 |
 | 🧭 **托盘与设置** | 托盘菜单切换桌宠、打开乐园、重新扫描；位置、大小、置顶、动画、主题等设置自动保存 |
@@ -61,6 +62,9 @@ python -m venv .venv
 pip install -r requirements.txt
 python main.py           # 启动桌宠
 python main.py --park    # 启动并打开乐园
+
+# 可选：Live2D 支持（Python 3.11+）
+pip install -r requirements-live2d.txt
 ```
 
 需要 Python 3.10+。首次启动后，右键桌宠或托盘图标即可打开菜单；**双击桌宠打开乐园**。
@@ -100,6 +104,8 @@ python main.py --park    # 启动并打开乐园
 | macOS | `~/Library/Application Support/AmakanoPet/models` |
 | Linux | `~/.local/share/AmakanoPet/models` |
 
+**Live2D 模型**：安装 `requirements-live2d.txt` 后，把导出的模型文件夹（含 `*.model3.json`）整个放进模型文件夹即可，可选的 `pet.json` 写 `"renderer": "live2d"`。
+
 完整格式、角色 id 列表与校验规则见 [docs/MODEL_FORMAT.md](docs/MODEL_FORMAT.md)。
 想先试试格式？运行 `python tools/make_demo_model.py <模型文件夹>` 会生成一个由「糯糯」渲染的示例模型。
 
@@ -115,11 +121,11 @@ app/
   catalog.py            作品与角色资料（只读）
   data/amakano.json     资料数据（纯文字 + 来源链接）
   models.py             模型文件夹扫描与 pet.json 校验
-  renderers/            精灵渲染器、动画函数、原创吉祥物
+  renderers/            精灵渲染器、动画函数、原创吉祥物、可选 Live2D 后端
   ui/                   乐园窗口与通用组件
   window.py / tray.py   桌宠窗口与系统托盘
   controller.py         串联各模块
-tools/                  示例模型生成、截图脚本
+tools/                  示例模型生成、截图脚本、Live2D 测试样例下载
 tests/                  pytest + pytest-qt
 ```
 
@@ -132,12 +138,18 @@ QT_QPA_PLATFORM=offscreen python -m pytest -q
 QT_QPA_PLATFORM=offscreen python tools/capture_screenshots.py docs/screenshots   # 重新截图
 ```
 
-CI 在 Python 3.10 / 3.12 / 3.13 上运行 ruff 与离屏测试。
+CI 在 Python 3.10 / 3.12 / 3.13 上运行 ruff 与离屏测试；另有一项 Live2D 任务在 Xvfb 中渲染 Live2D 官方免费示例模型。示例模型只在测试时下载，不会进入仓库：
+
+```bash
+pip install -r requirements-live2d.txt
+export AMAKANOPET_LIVE2D_SAMPLE="$(tools/fetch_live2d_sample.sh Mark | tail -1)"
+QT_QPA_PLATFORM=xcb xvfb-run -a python -m pytest -q tests/test_live2d.py
+```
 
 ## 🗺️ 路线图
 
 - [x] v0.1：精灵渲染器、自备模型、乐园、季节主题、托盘与设置
-- [ ] v0.2：Live2D（Cubism）模型支持（仅限用户自备的模型）
+- [x] v0.2：Live2D（Cubism）模型支持（仅限用户自备的模型）
 - [ ] 互动小动作、多显示器与贴边、更多设置项
 
 资料有误或需要补充？欢迎在 [Issues](https://github.com/Fiesty-Abyss/AmakanoPet/issues) 中附上来源链接告诉我们。

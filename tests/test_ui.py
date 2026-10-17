@@ -119,3 +119,24 @@ def test_rescan_falls_back_when_model_removed(qtbot, settings):
     (folder / "idle.png").unlink()
     controller.rescan()
     assert settings.current_model == BUILTIN_MASCOT
+
+
+def test_live2d_failure_falls_back_to_mascot(qtbot, settings, monkeypatch):
+    from app.renderers import live2d_backend
+
+    monkeypatch.setattr(live2d_backend, "live2d_available", lambda: True)
+
+    def broken(*_args, **_kwargs):
+        raise live2d_backend.Live2DError("测试用的失败")
+
+    monkeypatch.setattr(live2d_backend, "Live2DSource", broken)
+    folder = settings.model_root / "l2d"
+    folder.mkdir(parents=True)
+    (folder / "a.model3.json").write_text("{}", encoding="utf-8")
+    controller = AppController(settings, enable_tray=False)
+    qtbot.addWidget(controller.window)
+    park = controller.open_park()
+    qtbot.addWidget(park)
+    assert not controller.apply_model("l2d")
+    assert settings.current_model == BUILTIN_MASCOT
+    assert "测试用的失败" in park.models_page.message.text()

@@ -1,4 +1,4 @@
-"""Pet renderers. v0.1 ships the sprite renderer; Live2D is planned for v0.2."""
+"""Pet renderers: the sprite renderer plus an optional Live2D source (live2d-py)."""
 
 from app.renderers.sprite import ImageSource, MascotSource, SpriteRenderer, SpriteSource
 

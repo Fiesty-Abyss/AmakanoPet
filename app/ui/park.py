@@ -363,6 +363,9 @@ class ModelsPage(QWidget):
             buttons.addWidget(b)
         buttons.addStretch(1)
         layout.addLayout(buttons)
+        self.message = _label("", "Muted", wrap=True)
+        self.message.hide()
+        layout.addWidget(self.message)
         self.list.currentItemChanged.connect(lambda *_: self._update_buttons())
         self.refresh()
 
@@ -388,6 +391,10 @@ class ModelsPage(QWidget):
             empty.setFlags(Qt.ItemFlag.NoItemFlags)
             self.list.addItem(empty)
         self._update_buttons()
+
+    def show_message(self, text: str) -> None:
+        self.message.setText(text)
+        self.message.setVisible(bool(text))
 
     def _selected_key(self) -> str | None:
         item = self.list.currentItem()

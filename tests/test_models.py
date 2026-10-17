@@ -1,6 +1,7 @@
 from pathlib import Path
 
 from app.models import ModelLibrary
+from app.renderers import live2d_backend
 from tests.conftest import write_manifest, write_png
 
 
@@ -87,14 +88,52 @@ def test_bad_scale_and_unknown_renderer(model_root):
     assert entries["a"].errors and entries["b"].errors
 
 
-def test_live2d_is_detected_but_unsupported(model_root):
+def test_live2d_without_library_is_unsupported(model_root, monkeypatch):
+    monkeypatch.setattr(live2d_backend, "live2d_available", lambda: False)
     folder = model_root / "l2d"
     folder.mkdir()
     (folder / "hiyori.model3.json").write_text("{}", encoding="utf-8")
     [entry] = scan(model_root).entries
     assert entry.renderer == "live2d"
+    assert entry.live2d_model.name == "hiyori.model3.json"
     assert not entry.supported
-    assert "暂不支持" in entry.status
+    assert "live2d-py" in entry.status
+
+
+def test_live2d_with_library_is_supported(model_root, monkeypatch):
+    monkeypatch.setattr(live2d_backend, "live2d_available", lambda: True)
+    folder = model_root / "l2d"
+    folder.mkdir()
+    (folder / "model.json").write_text("{}", encoding="utf-8")  # Cubism 2
+    write_png(folder / "avatar.png")
+    [entry] = scan(model_root).entries
+    assert entry.supported
+    assert entry.status == "可用（Live2D）"
+    assert entry.card_image().name == "avatar.png"
+
+
+def test_live2d_manifest_options(model_root, monkeypatch):
+    monkeypatch.setattr(live2d_backend, "live2d_available", lambda: True)
+    good = model_root / "good"
+    good.mkdir()
+    (good / "m.model3.json").write_text("{}", encoding="utf-8")
+    write_manifest(good, {"renderer": "live2d", "character": "amakano.mizuki",
+                          "live2d": {"model": "m.model3.json", "zoom": 1.4, "offset": [0, -0.2]}})
+    auto = model_root / "auto"
+    auto.mkdir()
+    (auto / "x.model3.json").write_text("{}", encoding="utf-8")
+    write_manifest(auto, {"renderer": "live2d"})
+    bad = model_root / "bad"
+    bad.mkdir()
+    (bad / "tex.png").write_bytes(b"x")
+    write_manifest(bad, {"renderer": "live2d",
+                         "live2d": {"model": "tex.png", "zoom": 0, "offset": [9]}})
+    entries = {e.key: e for e in scan(model_root).entries}
+    assert entries["good"].supported
+    assert entries["good"].live2d_zoom == 1.4
+    assert entries["good"].live2d_offset == (0.0, -0.2)
+    assert entries["auto"].live2d_model.name == "x.model3.json"
+    assert len(entries["bad"].errors) == 3
 
 
 def test_hidden_and_deep_folders_are_skipped(model_root):

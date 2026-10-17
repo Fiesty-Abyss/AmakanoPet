@@ -2,6 +2,23 @@
 
 格式参考 [Keep a Changelog](https://keepachangelog.com/zh-CN/1.1.0/)，版本号遵循 [语义化版本](https://semver.org/lang/zh-CN/)。
 
+## [0.2.0] - 2026-10-17
+
+### 新增
+
+- 可选的 Live2D 支持：安装 `live2d-py`（Python 3.11+）后，可以显示用户自备的 Cubism 2 / 3+ 模型。
+  - 在共享的离屏 OpenGL 上下文中渲染，桌宠窗口保持透明。
+  - 模型自带呼吸、眨眼和物理；单击播放 `TapBody` 动作；视线跟随鼠标。
+- `pet.json` 新增 `live2d.model` / `zoom` / `offset`；未写 `pet.json` 时自动识别 Live2D 模型文件夹。
+- 模型加载失败时自动换回糯糯，并在「我的模型」页显示原因。
+- `requirements-live2d.txt` 与 `pip install amakanopet[live2d]` 可选依赖。
+- `tools/fetch_live2d_sample.sh`：在测试时下载 Live2D 官方免费示例模型，存放在被 git 忽略的目录中。
+- CI 新增 Live2D 任务（Xvfb），渲染官方免费示例模型；示例模型不进入仓库。
+
+### 变更
+
+- 未安装 live2d-py 时，Live2D 模型显示安装提示，不再提示“计划支持”。
+
 ## [0.1.0] - 2026-10-17
 
 首个公开版本。
@@ -22,4 +39,5 @@
 
 - 早期的连接测试文件 `test_connection.txt`。
 
+[0.2.0]: https://github.com/Fiesty-Abyss/AmakanoPet/releases/tag/v0.2.0
 [0.1.0]: https://github.com/Fiesty-Abyss/AmakanoPet/releases/tag/v0.1.0

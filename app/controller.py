@@ -12,7 +12,7 @@ from PySide6.QtWidgets import QApplication, QMenu
 from app.catalog import Catalog
 from app.config import BUILTIN_MASCOT, THEME_FOLLOW, SettingsStore
 from app.models import ModelEntry, ModelLibrary
-from app.renderers import ImageSource, MascotSource, SpriteRenderer
+from app.renderers import ImageSource, MascotSource, SpriteRenderer, SpriteSource
 from app.theme import Theme, get_theme
 from app.tray import SystemTray, create_app_icon
 from app.ui.park import ParkWindow
@@ -47,6 +47,7 @@ class AppController(QObject):
             self.tray.quit_requested.connect(self.quit)
 
         self.current: ModelEntry | None = None
+        self.last_error = ""
         self.apply_model(self.settings.current_model, persist=False)
 
     # ---- startup ----------------------------------------------------------
@@ -70,16 +71,27 @@ class AppController(QObject):
             return get_theme(self.catalog.season_of(self.current.character))
         return get_theme(None)
 
+    def _make_source(self, entry: ModelEntry) -> SpriteSource:
+        if entry.renderer == "live2d" and entry.live2d_model is not None:
+            from app.renderers.live2d_backend import Live2DSource
+
+            return Live2DSource(entry.live2d_model, entry.live2d_zoom, entry.live2d_offset)
+        if entry.idle is None:
+            raise ValueError(f"模型缺少待机图：{entry.key}")
+        return ImageSource(entry.idle, entry.blink)
+
     def apply_model(self, key: str, persist: bool = True) -> bool:
         entry = None if key == BUILTIN_MASCOT else self.library.get(key)
         ok = True
-        if entry is not None and entry.supported and entry.idle is not None:
+        self.last_error = ""
+        if entry is not None and entry.supported:
             try:
-                self.renderer.set_source(ImageSource(entry.idle, entry.blink))
+                self.renderer.set_source(self._make_source(entry))
                 self.current = entry
                 self.window.set_model_scale(entry.scale)
-            except ValueError as exc:
+            except (ValueError, RuntimeError) as exc:  # Live2DError is a RuntimeError
                 log.warning("%s", exc)
+                self.last_error = str(exc)
                 ok = False
         else:
             ok = key == BUILTIN_MASCOT
@@ -93,6 +105,8 @@ class AppController(QObject):
             self.settings.current_model = key
         if self._park is not None:
             self._park.models_page.refresh()
+            self._park.models_page.show_message(
+                f"切换失败，已换回糯糯：{self.last_error}" if self.last_error else "")
         return ok
 
     def rescan(self) -> None:
