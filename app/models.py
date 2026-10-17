@@ -2,7 +2,7 @@
 
 AmakanoPet never ships character art. Users put their own models into the
 model root folder (see docs/MODEL_FORMAT.md). Each model is a sub-folder that
-either contains a ``pet.json`` manifest or at least an ``idle.png``.
+contains a ``pet.json`` manifest, an ``idle.png`` or a Live2D model json.
 """
 
 from __future__ import annotations
@@ -18,8 +18,14 @@ IMAGE_SUFFIXES = {".png", ".webp", ".jpg", ".jpeg"}
 MAX_IMAGE_BYTES = 20 * 1024 * 1024
 MAX_MANIFEST_BYTES = 256 * 1024
 MAX_DEPTH = 3
-SUPPORTED_RENDERERS = {"sprite"}
 KNOWN_RENDERERS = {"sprite", "live2d"}
+
+
+def supported_renderers() -> set[str]:
+    """Sprites always work; Live2D needs the optional live2d-py package."""
+    from app.renderers.live2d_backend import live2d_available
+
+    return {"sprite", "live2d"} if live2d_available() else {"sprite"}
 
 
 @dataclass
@@ -33,6 +39,8 @@ class ModelEntry:
     blink: list[Path] = field(default_factory=list)
     avatar: Path | None = None
     live2d_model: Path | None = None
+    live2d_zoom: float = 1.0
+    live2d_offset: tuple[float, float] = (0.0, 0.0)
     scale: float = 1.0
     author: str = ""
     license: str = ""
@@ -41,15 +49,19 @@ class ModelEntry:
 
     @property
     def supported(self) -> bool:
-        return not self.errors and self.renderer in SUPPORTED_RENDERERS
+        return not self.errors and self.renderer in supported_renderers()
 
     @property
     def status(self) -> str:
         if self.errors:
             return "错误：" + "；".join(self.errors)
-        if self.renderer not in SUPPORTED_RENDERERS:
-            return f"暂不支持的渲染器：{self.renderer}（计划在后续版本支持）"
-        return "可用"
+        if self.renderer not in supported_renderers():
+            if self.renderer == "live2d":
+                from app.renderers.live2d_backend import INSTALL_HINT
+
+                return f"Live2D 模型暂不可用：{INSTALL_HINT}"
+            return f"暂不支持的渲染器：{self.renderer}"
+        return "可用（Live2D）" if self.renderer == "live2d" else "可用"
 
     def card_image(self) -> Path | None:
         """Image to show on heroine cards: avatar first, then the idle frame."""
@@ -119,7 +131,9 @@ def parse_model_folder(folder: Path, root: Path) -> ModelEntry | None:
     if live2d is not None:
         entry = ModelEntry(key=key, name=folder.name, folder=folder, renderer="live2d",
                            live2d_model=live2d)
-        entry.warnings.append("检测到 Live2D 模型；v0.1 仅支持精灵图")
+        avatar = folder / "avatar.png"
+        entry.avatar = avatar if avatar.is_file() else None
+        entry.warnings.append("未找到 pet.json，已自动识别 Live2D 模型文件")
         return entry
     return None
 
@@ -185,14 +199,43 @@ def _parse_manifest(folder: Path, key: str, manifest_path: Path) -> ModelEntry:
             path = _safe_child(folder, item, errors, f"sprite.blink[{i}]")
             if path is not None:
                 entry.blink.append(path)
-    else:  # live2d (recognised, rendered from v0.2)
-        live2d = data.get("live2d") or {}
-        model = live2d.get("model") if isinstance(live2d, dict) else None
+    else:
+        _parse_live2d(folder, data.get("live2d"), entry)
+    return entry
+
+
+def _parse_live2d(folder: Path, live2d: object, entry: ModelEntry) -> None:
+    errors = entry.errors
+    if live2d is None:
+        live2d = {}
+    if not isinstance(live2d, dict):
+        errors.append("live2d 必须是对象")
+        return
+    model = live2d.get("model")
+    if model in (None, ""):
+        found = _find_live2d(folder)
+        if found is None:
+            errors.append("缺少 live2d.model")
+            return
+        entry.live2d_model = found
+    else:
         entry.live2d_model = _safe_child(folder, model, errors, "live2d.model",
                                          images_only=False)
-        if entry.live2d_model is None and not errors:
-            errors.append("缺少 live2d.model")
-    return entry
+        if entry.live2d_model is not None and not entry.live2d_model.name.endswith(".json"):
+            errors.append("live2d.model 应为 .model3.json 或 .model.json 文件")
+            entry.live2d_model = None
+    zoom = live2d.get("zoom", 1.0)
+    if isinstance(zoom, (int, float)) and not isinstance(zoom, bool) and 0.1 <= zoom <= 10:
+        entry.live2d_zoom = float(zoom)
+    else:
+        errors.append("live2d.zoom 必须是 0.1 到 10 之间的数字")
+    offset = live2d.get("offset", [0, 0])
+    if (isinstance(offset, list) and len(offset) == 2
+            and all(isinstance(v, (int, float)) and not isinstance(v, bool) for v in offset)
+            and all(-5 <= v <= 5 for v in offset)):
+        entry.live2d_offset = (float(offset[0]), float(offset[1]))
+    else:
+        errors.append("live2d.offset 必须是 [x, y]，取值 -5 到 5")
 
 
 class ModelLibrary:
