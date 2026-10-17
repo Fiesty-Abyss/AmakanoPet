@@ -1,8 +1,11 @@
 """Transparent, frameless desktop pet window."""
 
-from PySide6.QtCore import QPoint, Qt, Signal
+from __future__ import annotations
+
+from collections.abc import Callable
+
+from PySide6.QtCore import QPoint, QRectF, Qt, Signal
 from PySide6.QtGui import (
-    QColor,
     QContextMenuEvent,
     QKeyEvent,
     QMouseEvent,
@@ -10,75 +13,105 @@ from PySide6.QtGui import (
     QPaintEvent,
     QWheelEvent,
 )
-from PySide6.QtWidgets import QMenu, QWidget
+from PySide6.QtWidgets import QApplication, QMenu, QWidget
 
 from app.config import (
     APP_NAME,
-    MAX_SCALE,
-    MIN_SCALE,
     SCALE_STEP,
     WINDOW_HEIGHT,
     WINDOW_WIDTH,
     SettingsStore,
+    clamp_scale,
 )
+from app.renderers import SpriteRenderer
 
 
 class PetWindow(QWidget):
-    """Minimal always-on-top window that can be dragged around the desktop."""
+    """Always-on-top transparent window that renders the pet and can be dragged."""
 
     quit_requested = Signal()
+    park_requested = Signal()
+    scale_changed = Signal(float)
 
-    def __init__(self, settings: SettingsStore | None = None) -> None:
+    def __init__(self, settings: SettingsStore | None = None,
+                 renderer: SpriteRenderer | None = None) -> None:
         super().__init__()
         self._settings = settings or SettingsStore()
+        self.renderer = renderer or SpriteRenderer(parent=self)
+        self.renderer.frame_ready.connect(self.update)
+        self._press_pos: QPoint | None = None
         self._drag_offset: QPoint | None = None
+        self._dragging = False
+        self._model_scale = 1.0
+        self.menu_extender: Callable[[QMenu], None] | None = None
         state = self._settings.load_window_state()
         self._scale = state.scale
 
         self.setWindowTitle(APP_NAME)
         self._apply_size()
-        self.setWindowFlags(
-            Qt.WindowType.FramelessWindowHint
-            | Qt.WindowType.WindowStaysOnTopHint
-            | Qt.WindowType.Tool
-        )
+        self._apply_flags(self._settings.always_on_top)
         self.setAttribute(Qt.WidgetAttribute.WA_TranslucentBackground, True)
+        self.setToolTip("双击打开乐园 · Ctrl+滚轮缩放 · 右键菜单")
         if state.position is not None:
             self.move(state.position)
+        self.renderer.set_animated(self._settings.animations_enabled)
 
+    # ---- geometry ---------------------------------------------------------
     @property
     def scale(self) -> float:
         return self._scale
 
     def _apply_size(self) -> None:
-        self.setFixedSize(
-            round(WINDOW_WIDTH * self._scale),
-            round(WINDOW_HEIGHT * self._scale),
-        )
+        factor = self._scale * self._model_scale
+        self.setFixedSize(round(WINDOW_WIDTH * factor), round(WINDOW_HEIGHT * factor))
+
+    def _apply_flags(self, on_top: bool) -> None:
+        flags = Qt.WindowType.FramelessWindowHint | Qt.WindowType.Tool
+        if on_top:
+            flags |= Qt.WindowType.WindowStaysOnTopHint
+        self.setWindowFlags(flags)
+
+    def set_always_on_top(self, on_top: bool) -> None:
+        visible = self.isVisible()
+        self._apply_flags(on_top)
+        if visible:
+            self.show()
+
+    def set_model_scale(self, factor: float) -> None:
+        """Per-model size factor from pet.json (multiplied with the user scale)."""
+        factor = min(3.0, max(0.3, factor))
+        if factor != self._model_scale:
+            self._resize_keeping_center(lambda: setattr(self, "_model_scale", factor))
+
+    def _resize_keeping_center(self, change: Callable[[], None]) -> None:
+        old_center = self.frameGeometry().center()
+        change()
+        self._apply_size()
+        self.move(old_center - self.rect().center())
+        self.update()
 
     def save_window_state(self) -> None:
         self._settings.save_window_state(self.pos(), self._scale)
 
     def set_scale(self, scale: float) -> None:
-        new_scale = round(min(MAX_SCALE, max(MIN_SCALE, scale)), 1)
+        new_scale = clamp_scale(scale, self._scale)
         if new_scale == self._scale:
             return
-
-        old_center = self.frameGeometry().center()
-        self._scale = new_scale
-        self._apply_size()
-        self.move(old_center - self.rect().center())
+        self._resize_keeping_center(lambda: setattr(self, "_scale", new_scale))
         self.save_window_state()
-        self.update()
+        self.scale_changed.emit(new_scale)
 
+    # ---- visibility -------------------------------------------------------
     def show_window(self) -> None:
         self.show()
         self.raise_()
         self.activateWindow()
+        self.renderer.start()
 
     def hide_to_tray(self) -> None:
         self.save_window_state()
         self.hide()
+        self.renderer.stop()
 
     def toggle_visibility(self) -> None:
         if self.isVisible():
@@ -86,46 +119,54 @@ class PetWindow(QWidget):
         else:
             self.show_window()
 
+    # ---- painting ---------------------------------------------------------
     def paintEvent(self, event: QPaintEvent) -> None:
-        """Draw a simple translucent placeholder until character art is added."""
         painter = QPainter(self)
         painter.setRenderHint(QPainter.RenderHint.Antialiasing)
-        painter.setPen(Qt.PenStyle.NoPen)
-        painter.setBrush(QColor(255, 182, 193, 190))
-        painter.drawRoundedRect(self.rect().adjusted(10, 10, -10, -10), 32, 32)
+        self.renderer.paint(painter, QRectF(self.rect()))
+        painter.end()
 
-        painter.setPen(QColor(70, 45, 55))
-        painter.drawText(
-            self.rect(),
-            Qt.AlignmentFlag.AlignCenter,
-            f"{APP_NAME}\n拖动窗口\nCtrl + 滚轮缩放",
-        )
-        super().paintEvent(event)
-
+    # ---- interaction ------------------------------------------------------
     def mousePressEvent(self, event: QMouseEvent) -> None:
         if event.button() == Qt.MouseButton.LeftButton:
-            self._drag_offset = event.globalPosition().toPoint() - self.frameGeometry().topLeft()
+            self._press_pos = event.globalPosition().toPoint()
+            self._drag_offset = self._press_pos - self.frameGeometry().topLeft()
+            self._dragging = False
             event.accept()
             return
         super().mousePressEvent(event)
 
     def mouseMoveEvent(self, event: QMouseEvent) -> None:
-        if (
-            self._drag_offset is not None
-            and event.buttons() & Qt.MouseButton.LeftButton
-        ):
-            self.move(event.globalPosition().toPoint() - self._drag_offset)
+        if self._drag_offset is not None and event.buttons() & Qt.MouseButton.LeftButton:
+            pos = event.globalPosition().toPoint()
+            if not self._dragging and self._press_pos is not None:
+                moved = (pos - self._press_pos).manhattanLength()
+                self._dragging = moved >= QApplication.startDragDistance()
+            if self._dragging:
+                self.move(pos - self._drag_offset)
             event.accept()
             return
         super().mouseMoveEvent(event)
 
     def mouseReleaseEvent(self, event: QMouseEvent) -> None:
         if event.button() == Qt.MouseButton.LeftButton:
+            if self._dragging:
+                self.save_window_state()
+            else:
+                self.renderer.hop()
             self._drag_offset = None
-            self.save_window_state()
+            self._press_pos = None
+            self._dragging = False
             event.accept()
             return
         super().mouseReleaseEvent(event)
+
+    def mouseDoubleClickEvent(self, event: QMouseEvent) -> None:
+        if event.button() == Qt.MouseButton.LeftButton:
+            self.park_requested.emit()
+            event.accept()
+            return
+        super().mouseDoubleClickEvent(event)
 
     def keyPressEvent(self, event: QKeyEvent) -> None:
         if event.key() == Qt.Key.Key_Escape:
@@ -142,14 +183,16 @@ class PetWindow(QWidget):
             return
         super().wheelEvent(event)
 
-    def contextMenuEvent(self, event: QContextMenuEvent) -> None:
+    def build_context_menu(self) -> QMenu:
         menu = QMenu(self)
-        visibility_action = menu.addAction(
-            "隐藏窗口" if self.isVisible() else "显示窗口"
-        )
-        visibility_action.triggered.connect(self.toggle_visibility)
+        menu.addAction("打开乐园").triggered.connect(self.park_requested.emit)
+        if self.menu_extender is not None:
+            self.menu_extender(menu)
         menu.addSeparator()
-        quit_action = menu.addAction("退出")
-        quit_action.triggered.connect(self.quit_requested.emit)
-        menu.exec(event.globalPos())
+        menu.addAction("隐藏桌宠").triggered.connect(self.hide_to_tray)
+        menu.addAction("退出").triggered.connect(self.quit_requested.emit)
+        return menu
+
+    def contextMenuEvent(self, event: QContextMenuEvent) -> None:
+        self.build_context_menu().exec(event.globalPos())
         event.accept()

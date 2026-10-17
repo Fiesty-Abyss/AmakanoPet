@@ -1,1 +1,3 @@
-"""AmakanoPet application package."""
+"""AmakanoPet：非官方同人桌宠（アマカノ 系列角色乐园）。"""
+
+__version__ = "0.1.0"

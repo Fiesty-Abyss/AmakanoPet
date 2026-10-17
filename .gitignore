@@ -2,3 +2,13 @@ __pycache__/
 *.py[cod]
 .venv/
 venv/
+.pytest_cache/
+.ruff_cache/
+build/
+dist/
+*.egg-info/
+
+# 用户模型与本地测试素材不进仓库
+models/
+user-models/
+.local-test-models/
