@@ -185,7 +185,9 @@ class ProfilePage(QWidget):
         usable = [m for m in models if m.supported]
         if usable:
             for model in usable:
-                button = QPushButton(f"设为桌宠：{model.name}")
+                pl.addWidget(_label(model.name, wrap=True))
+                button = QPushButton("设为桌宠")
+                button.setToolTip(f"{model.name}（{model.key}）")
                 button.clicked.connect(lambda _=False, k=model.key: self.set_pet_requested.emit(k))
                 pl.addWidget(button)
         else:
