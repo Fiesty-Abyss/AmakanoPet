@@ -12,3 +12,25 @@ dist/
 models/
 user-models/
 .local-test-models/
+
+# Never commit model files (user-supplied / community / Live2D samples)
+private-models/
+*.moc
+*.moc3
+*.model.json
+*.model3.json
+*.physics.json
+*.physics3.json
+*.exp.json
+*.exp3.json
+*.motion3.json
+*.mtn
+*.cdi3.json
+*.pose3.json
+*.userdata3.json
+*.vtube.json
+items_pinned_to_model.json
+*.psb
+*.zip
+*.7z
+*.rar
