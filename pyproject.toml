@@ -1,6 +1,6 @@
 [project]
 name = "amakanopet"
-version = "0.2.0"
+version = "0.2.1"
 description = "非官方同人桌宠：アマカノ（甜蜜女友）系列角色乐园。用户自备模型，不含任何官方素材。"
 readme = "README.md"
 license = { text = "MIT" }

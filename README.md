@@ -39,6 +39,7 @@
 ## 📸 截图
 
 > 以下均为程序在 Linux 上实际运行时截取的画面（离屏渲染），画面中只有原创占位图，没有任何官方美术素材。
+> 使用社区 Live2D 模型的截图见下方 [社区模型](#-社区模型)。
 
 | 角色资料（秋主题） | 角色资料（冬主题） |
 |---|---|
@@ -117,11 +118,21 @@ pip install -r requirements-live2d.txt
 
 | 角色 | 类型 | 作者 | 获取方式 |
 |---|---|---|---|
-| 柳木 詩夢（アマカノ3） | Live2D，带头发物理 | B 站 UP 主 **Jim_Milton** | 请到作者的 [B 站空间](https://b23.tv/55TJPMS) 按作者说明获取 |
+| 柳木 詩夢（アマカノ3） | Live2D（Cubism 5），带头发物理、两个表情 | B 站 UP 主 **Jim_Milton** | 请到作者的 [B 站空间](https://b23.tv/55TJPMS) 按作者说明获取 |
 
 **作者条款**（以作者空间的最新说明为准）：
 - 允许免费分享，**禁止商用**。
 - 模型的权利归作者及原作权利人所有。
+
+**效果**：以下截图来自 AmakanoPet 实际运行画面（Xvfb + OpenGL）。模型由 B 站 UP 主 [Jim_Milton](https://b23.tv/55TJPMS) 制作，截图仅用于展示兼容效果，模型文件本身**不在**仓库中。
+
+| 桌宠（Live2D） | 单击后（随机表情） | 资料页（自动生成头像） |
+|---|---|---|
+| <img src="docs/screenshots/pet-live2d-shion.png" width="200"> | <img src="docs/screenshots/pet-live2d-shion-click.png" width="200"> | ![诗梦资料页](docs/screenshots/profile-shion-live2d.png) |
+
+| 角色一览 | 我的模型 |
+|---|---|
+| ![アマカノ3 角色一览](docs/screenshots/park-amakano3-live2d.png) | ![我的模型](docs/screenshots/models-live2d.png) |
 
 **使用方法**：
 1. 从作者处获取模型。
@@ -129,7 +140,34 @@ pip install -r requirements-live2d.txt
 3. 把模型文件夹（含 `*.model3.json`）整个放进本地模型文件夹。可选：在 `pet.json` 中写 `"renderer": "live2d"`、`"character": "amakano3.shion"`，把它绑定到乐园里的诗梦。
 4. 在「我的模型」中点击 **重新扫描** 并选用。格式详见 [docs/MODEL_FORMAT.md](docs/MODEL_FORMAT.md#live2d-模型v02-起)。
 
+这个模型没有定义 `EyeBlink` 参数组，也没有动作文件（为 VTube Studio 面捕制作的模型很常见）。AmakanoPet 0.2.1 起会自动处理：
+- 由程序驱动眨眼；
+- 单击时随机切换模型自带的表情；
+- 截取头部作为乐园卡片的头像。
+
 > 请不要把社区模型提交到本仓库，也不要转载到网盘等渠道再分发。想推荐其他作者的模型？欢迎在 Issue 中附上**作者主页**链接（请不要附网盘链接）。
+
+> 💡 **作者正在学习 Live2D 建模，后续会持续开发原创模型与更多功能。** 欢迎关注本仓库的更新。
+
+## 🎮 支持正版
+
+AmakanoPet 只是粉丝自制的小工具。喜欢这些角色的话，请购买正版游戏，支持あざらしそふと（海豹社）。
+
+> ⚠️ 本系列原作为日本 **18 禁（成人向）** 美少女游戏，未成年人请勿购买。下面优先列出官方网站和官方指定的销售渠道；日本的成人向商店（FANZA GAMES、Getchu.com）需要先确认年龄，部分地区访问 FANZA 需要登录。Steam 版《甜蜜女友 3》由 Shiravune 发行，商店页未标注成人内容（以商店页最终信息为准）。
+
+- 品牌官网：[あざらしそふと オフィシャルサイト](https://azarashi-soft.nexton-net.jp/top.html) · [全部作品一览](https://azarashi-soft.nexton-net.jp/product/)
+
+| 作品 | 官方作品页 | 下载版（官方作品一览指向的渠道） | 实体版 / 其他 |
+|---|---|---|---|
+| アマカノ | [官网](https://azarashi-soft.nexton-net.jp/amakano/) · [Perfect Edition](https://azarashi-soft.nexton-net.jp/amakano-pe/) | [FANZA GAMES](https://dlsoft.dmm.co.jp/detail/next_0190/) | [アマカノ コンプリートボックス（官网）](https://azarashi-soft.nexton-net.jp/completebox/) · [Getchu](https://www.getchu.com/item/1292050/) |
+| アマカノ ～Second Season～ | [官网](https://azarashi-soft.nexton-net.jp/amakano-ss/) | [FANZA GAMES](https://dlsoft.dmm.co.jp/detail/next_0217/) | 同上（コンプリートボックス） |
+| アマカノ＋ | [官网](https://azarashi-soft.nexton-net.jp/amakano-plus/) | [FANZA GAMES](https://dlsoft.dmm.co.jp/detail/next_0223/) | 同上（コンプリートボックス） |
+| アマカノ ～Second Season～＋ | [官网](https://azarashi-soft.nexton-net.jp/amakano-ss-plus/) | [FANZA GAMES](https://dlsoft.dmm.co.jp/detail/next_0249/) | [Getchu](https://www.getchu.com/item/970379/) |
+| アマカノ2 | [官网](https://azarashi-soft.nexton-net.jp/amakano2/) · [Perfect Edition](https://azarashi-soft.nexton-net.jp/amakano2-pe/) | [FANZA GAMES](https://dlsoft.dmm.co.jp/detail/next_0287/) | [Getchu（Limited Edition）](https://www.getchu.com/item/1210314/) |
+| アマカノ2＋ | [官网](https://azarashi-soft.nexton-net.jp/amakano2-plus/) | [FANZA GAMES](https://dlsoft.dmm.co.jp/detail/next_0370/) | [Getchu](https://www.getchu.com/item/1210315/) |
+| アマカノ3 | [官网](https://azarashi-soft.nexton-net.jp/amakano3/) | [FANZA GAMES](https://dlsoft.dmm.co.jp/detail/next_0452/) | [Getchu](https://www.getchu.com/item/1334471/) · **[Steam《甜蜜女友 3》](https://store.steampowered.com/app/4932930/)**（简繁中文，发售日待公布，可加入愿望单） |
+
+各作品的 Android 版通过 DMM GAMES 商店发售，详见各官方作品页。截至 2026-10-17，DLsite 上没有找到本系列游戏本体的官方销售页，所以没有列出。
 
 ## 🗂️ 项目结构
 

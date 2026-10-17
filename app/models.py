@@ -7,6 +7,7 @@ contains a ``pet.json`` manifest, an ``idle.png`` or a Live2D model json.
 
 from __future__ import annotations
 
+import hashlib
 import json
 import os
 from dataclasses import dataclass, field
@@ -46,6 +47,7 @@ class ModelEntry:
     license: str = ""
     errors: list[str] = field(default_factory=list)
     warnings: list[str] = field(default_factory=list)
+    snapshot: Path | None = None  # cached head shot of a Live2D model (no avatar given)
 
     @property
     def supported(self) -> bool:
@@ -64,8 +66,19 @@ class ModelEntry:
         return "可用（Live2D）" if self.renderer == "live2d" else "可用"
 
     def card_image(self) -> Path | None:
-        """Image to show on heroine cards: avatar first, then the idle frame."""
-        return self.avatar or self.idle
+        """Image to show on heroine cards: avatar, idle frame, then a Live2D snapshot."""
+        return self.avatar or self.idle or self.snapshot
+
+    def snapshot_name(self) -> str | None:
+        """Cache file name for a Live2D snapshot; changes when the model json changes."""
+        if self.renderer != "live2d" or self.live2d_model is None:
+            return None
+        try:
+            stamp = self.live2d_model.stat().st_mtime_ns
+        except OSError:
+            return None
+        digest = hashlib.sha1(f"{self.live2d_model.resolve()}|{stamp}".encode()).hexdigest()
+        return f"{digest[:16]}.png"
 
 
 def _safe_child(folder: Path, value: object, errors: list[str], label: str,
@@ -241,8 +254,9 @@ def _parse_live2d(folder: Path, live2d: object, entry: ModelEntry) -> None:
 class ModelLibrary:
     """Scan the model root folder."""
 
-    def __init__(self, root: Path) -> None:
+    def __init__(self, root: Path, snapshot_dir: Path | None = None) -> None:
         self.root = Path(root)
+        self.snapshot_dir = Path(snapshot_dir) if snapshot_dir else None
         self.entries: list[ModelEntry] = []
 
     def ensure_root(self) -> None:
@@ -267,7 +281,16 @@ class ModelLibrary:
             elif depth >= MAX_DEPTH:
                 dirs[:] = []
         self.entries = sorted(found, key=lambda e: e.key)
+        for entry in self.entries:
+            path = self.snapshot_path(entry)
+            entry.snapshot = path if path is not None and path.is_file() else None
         return self.entries
+
+    def snapshot_path(self, entry: ModelEntry) -> Path | None:
+        name = entry.snapshot_name()
+        if self.snapshot_dir is None or name is None or entry.avatar is not None:
+            return None
+        return self.snapshot_dir / name
 
     def get(self, key: str) -> ModelEntry | None:
         return next((e for e in self.entries if e.key == key), None)

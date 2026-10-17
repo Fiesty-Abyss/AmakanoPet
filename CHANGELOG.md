@@ -2,6 +2,20 @@
 
 格式参考 [Keep a Changelog](https://keepachangelog.com/zh-CN/1.1.0/)，版本号遵循 [语义化版本](https://semver.org/lang/zh-CN/)。
 
+## [0.2.1] - 2026-10-17
+
+### 修复（Live2D 兼容性）
+
+- 有些模型没有定义 `EyeBlink` 参数组（为 VTube Studio 面捕制作的模型很常见），以前不会眨眼。现在只要模型有 `ParamEyeLOpen` / `ParamEyeROpen`，就由 AmakanoPet 驱动眨眼。
+- 没有动作文件的模型，单击时改为随机显示模型自带的表情（2.5 秒后恢复）。
+
+### 新增
+
+- 没有 `avatar` 的 Live2D 模型，首次显示后自动截取头部作为乐园卡片和资料页的头像（缓存在系统缓存目录，模型文件变化后会重新生成）。
+- `tools/capture_screenshots.py --live2d <模型文件夹>`：为 Live2D 模型截取桌宠、我的模型、角色一览、资料页的实际运行画面。
+- `.gitignore` 和测试会防止模型文件（`*.moc3`、`*.model3.json`、`*.vtube.json` 等）、压缩包和 `private-models/` 被提交。
+- README：在「社区模型」中加入 Jim_Milton 制作的柳木诗梦 Live2D 模型的运行截图（只有截图，不含模型文件）；新增「支持正版」章节。
+
 ## [0.2.0] - 2026-10-17
 
 ### 新增
@@ -39,5 +53,6 @@
 
 - 早期的连接测试文件 `test_connection.txt`。
 
+[0.2.1]: https://github.com/Fiesty-Abyss/AmakanoPet/releases/tag/v0.2.1
 [0.2.0]: https://github.com/Fiesty-Abyss/AmakanoPet/releases/tag/v0.2.0
 [0.1.0]: https://github.com/Fiesty-Abyss/AmakanoPet/releases/tag/v0.1.0
