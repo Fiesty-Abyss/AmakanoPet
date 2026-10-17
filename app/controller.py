@@ -5,7 +5,7 @@ from __future__ import annotations
 import logging
 from pathlib import Path
 
-from PySide6.QtCore import QObject, QUrl
+from PySide6.QtCore import QObject, QStandardPaths, QTimer, QUrl
 from PySide6.QtGui import QActionGroup, QDesktopServices
 from PySide6.QtWidgets import QApplication, QMenu
 
@@ -19,6 +19,12 @@ from app.ui.park import ParkWindow
 from app.window import PetWindow
 
 log = logging.getLogger(__name__)
+SNAPSHOT_DELAY_MS = 1500
+
+
+def snapshot_dir() -> Path:
+    base = QStandardPaths.writableLocation(QStandardPaths.StandardLocation.CacheLocation)
+    return Path(base or Path.home() / ".cache" / "AmakanoPet") / "live2d-avatars"
 
 
 class AppController(QObject):
@@ -27,7 +33,7 @@ class AppController(QObject):
         super().__init__()
         self.settings = settings or SettingsStore()
         self.catalog = catalog or Catalog.load()
-        self.library = ModelLibrary(self.settings.model_root)
+        self.library = ModelLibrary(self.settings.model_root, snapshot_dir())
         self._ensure_root()
         self.library.scan()
 
@@ -86,9 +92,11 @@ class AppController(QObject):
         self.last_error = ""
         if entry is not None and entry.supported:
             try:
-                self.renderer.set_source(self._make_source(entry))
+                source = self._make_source(entry)
+                self.renderer.set_source(source)
                 self.current = entry
                 self.window.set_model_scale(entry.scale)
+                self._schedule_snapshot(entry, source)
             except (ValueError, RuntimeError) as exc:  # Live2DError is a RuntimeError
                 log.warning("%s", exc)
                 self.last_error = str(exc)
@@ -108,6 +116,25 @@ class AppController(QObject):
             self._park.models_page.show_message(
                 f"切换失败，已换回糯糯：{self.last_error}" if self.last_error else "")
         return ok
+
+    def _schedule_snapshot(self, entry: ModelEntry, source: SpriteSource) -> None:
+        """Give Live2D models without an avatar a card image after they settle."""
+        path = self.library.snapshot_path(entry)
+        if path is None or path.is_file() or not hasattr(source, "snapshot"):
+            return
+
+        def capture() -> None:
+            if self.renderer.source is not source:
+                return
+            try:
+                if source.snapshot(path):
+                    entry.snapshot = path
+                    if self._park is not None:
+                        self._park.refresh_models()
+            except (OSError, RuntimeError) as exc:
+                log.warning("无法保存 Live2D 头像：%s", exc)
+
+        QTimer.singleShot(SNAPSHOT_DELAY_MS, capture)
 
     def rescan(self) -> None:
         self.library.scan()
