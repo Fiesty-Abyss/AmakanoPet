@@ -2,7 +2,21 @@
 
 格式参考 [Keep a Changelog](https://keepachangelog.com/zh-CN/1.1.0/)，版本号遵循 [语义化版本](https://semver.org/lang/zh-CN/)。
 
-## [0.2.1] - 2026-10-17
+## [0.2.2] - 2026-10-17
+
+### 修复（Live2D 表情与姿势）
+
+用户反馈柳木诗梦模型「表情还有姿势不对」。逐项检查了 model3.json、两个 exp3.json、物理和全部参数（默认值与 Cubism Viewer 一致，没有 pose3.json，也没有需要切换的手臂部件），找到的问题：
+
+- **姿势歪斜**：以前沿用 Cubism 示例框架的视线跟随，鼠标在桌宠窗口外时（几乎总是这样），头部会转到参数极限（±30°）、并按 `x·y·-30` 歪头，眼珠也被推到角落；示例框架的呼吸还会让头部摆动 ±15° / ±8° / ±10°。现在 Cubism 3+ 模型改用 AmakanoPet 自己的柔和视线（头部最多约 40% / 30% 参数范围、不歪头、平滑跟随、鼠标停住 4 秒后看向前方）和轻微的呼吸摆动，默认姿势与 Cubism Viewer 一致。
+- **表情突然跳回**：live2d-py 的 `ResetExpression` 和定时表情会让脸直接跳回默认。现在由 AmakanoPet 播放表情：按每个参数的 `Blend`（Add / Multiply / Overwrite）在动作结果上混合，按 `FadeInTime` / `FadeOutTime` 渐入渐出，切换表情时交叉淡化；单击不会重复上一个表情。
+- 视线与呼吸改为在物理之前写入，头发会跟着头部摆动。
+
+### 变更
+
+- 重新截取柳木诗梦模型的全部截图（截图时鼠标停在桌宠脸上）。
+- 截图脚本固定随机种子，单击后的表情可以复现。
+
 
 ### 修复（Live2D 兼容性）
 
@@ -53,6 +67,7 @@
 
 - 早期的连接测试文件 `test_connection.txt`。
 
+[0.2.2]: https://github.com/Fiesty-Abyss/AmakanoPet/releases/tag/v0.2.2
 [0.2.1]: https://github.com/Fiesty-Abyss/AmakanoPet/releases/tag/v0.2.1
 [0.2.0]: https://github.com/Fiesty-Abyss/AmakanoPet/releases/tag/v0.2.0
 [0.1.0]: https://github.com/Fiesty-Abyss/AmakanoPet/releases/tag/v0.1.0

@@ -27,6 +27,7 @@ from PySide6.QtCore import QCoreApplication, QRectF, QSize
 from PySide6.QtGui import QImage, QOffscreenSurface, QOpenGLContext, QPainter, QSurfaceFormat
 from PySide6.QtOpenGL import QOpenGLFramebufferObject, QOpenGLFramebufferObjectFormat
 
+from app.renderers import live2d_motion as motion
 from app.renderers.animation import BlinkScheduler
 from app.renderers.sprite import SpriteSource
 from app.theme import Theme
@@ -143,6 +144,28 @@ def needs_blink_fallback(model_json: Path, param_ids: list[str]) -> bool:
     return all(p in param_ids for p in EYE_OPEN_PARAMS)
 
 
+def load_expressions(model_json: Path) -> dict[str, motion.Expression]:
+    """Read the exp3.json files listed in a model3.json (name -> Expression)."""
+    model_json = Path(model_json)
+    try:
+        data = json.loads(model_json.read_text(encoding="utf-8-sig"))
+    except (OSError, ValueError):
+        return {}
+    out: dict[str, motion.Expression] = {}
+    for item in (data.get("FileReferences") or {}).get("Expressions") or []:
+        if not isinstance(item, dict) or not isinstance(item.get("File"), str):
+            continue
+        name = item.get("Name") if isinstance(item.get("Name"), str) else Path(item["File"]).stem
+        try:
+            exp = json.loads((model_json.parent / item["File"]).read_text(encoding="utf-8-sig"))
+        except (OSError, ValueError):
+            log.warning("无法读取表情文件：%s", item["File"])
+            continue
+        if isinstance(exp, dict):
+            out[name] = motion.parse_expression(name, exp)
+    return out
+
+
 def head_crop(image: QImage, ratio: float = 0.3) -> QImage:
     """Square crop around the top of the visible figure, used as a card avatar."""
     width, height = image.width(), image.height()
@@ -175,7 +198,7 @@ def _gl_state(lib: Any) -> _GLState:
 
 
 class Live2DSource(SpriteSource):
-    """Renders a Cubism model; the model animates itself (breath, blink, idle motions)."""
+    """Renders a Cubism model with idle motions, blinking, breathing and a soft gaze."""
 
     self_animated = True
     wants_gaze = True
@@ -192,7 +215,13 @@ class Live2DSource(SpriteSource):
         self._expressions = []
         self._blink = None
         self._t0 = time.monotonic()
+        self._last_t = 0.0
         self._expression_until: float | None = None
+        self._gaze = motion.GazeFollower()
+        self._ranges: dict[str, float] = {}
+        self._has_breath = False
+        self._v3 = False
+        self._player = motion.ExpressionPlayer()
         if not self._gl.make_current():
             raise Live2DError("无法激活 OpenGL 上下文")
         try:
@@ -206,6 +235,18 @@ class Live2DSource(SpriteSource):
             if needs_blink_fallback(self.model_json, list(model.GetParamIds() or [])):
                 self._blink = BlinkScheduler()
                 log.info("模型未定义 EyeBlink 参数组，使用 AmakanoPet 的眨眼：%s", self.model_json)
+            ids = list(model.GetParamIds() or [])
+            self._v3 = bool(model.IsV3()) and str(self.model_json).endswith(".model3.json")
+            if self._v3:
+                # we drive breath and gaze ourselves (see live2d_motion)
+                model.SetAutoBreath(False)
+                self._ranges = motion.symmetric_ranges({
+                    pid: (model.GetParamMinByIndex(i), model.GetParamMaxByIndex(i))
+                    for i, pid in enumerate(ids)})
+                self._has_breath = motion.BREATH[0] in ids
+                self._player = motion.ExpressionPlayer(load_expressions(self.model_json))
+                if self._player.names:
+                    self._expressions = self._player.names
             self._model = model
         except Exception as exc:  # live2d-py raises plain RuntimeError / C++ errors
             raise Live2DError(f"Live2D 模型加载失败：{exc}") from exc
@@ -236,8 +277,7 @@ class Live2DSource(SpriteSource):
             self._fbo.bind()
             self._gl.context.functions().glViewport(0, 0, width, height)
             self._lib.clearBuffer(0.0, 0.0, 0.0, 0.0)
-            self._model.Update()
-            self._apply_extras(time.monotonic() - self._t0)
+            self._update(time.monotonic() - self._t0)
             self._model.Draw()
             image = self._fbo.toImage()
             self._fbo.release()
@@ -253,8 +293,51 @@ class Live2DSource(SpriteSource):
     def expressions(self) -> list[str]:
         return list(self._expressions)
 
+    def _update(self, t: float) -> None:
+        """Advance the model by one frame.
+
+        Cubism 3+ models run the framework steps one by one: motion, blink,
+        expressions (blended with each exp3 parameter's Add / Multiply /
+        Overwrite mode, fading in and out), then our gentle gaze and breathing,
+        and only then physics, so the hair follows the head.
+        """
+        dt = min(0.1, max(0.0, t - self._last_t))
+        self._last_t = t
+        model = self._model
+        if not self._v3:
+            model.Update()
+            self._apply_extras(t)
+            return
+        model.LoadParameters()  # values saved after the last motion step
+        if self._groups.get("Idle") and model.IsMotionFinished():
+            with contextlib.suppress(Exception):
+                model.StartRandomMotion("Idle", 1)
+        model.UpdateMotion(dt)
+        model.SaveParameters()
+        if self._blink is None:
+            model.UpdateBlink(dt)  # the model's own EyeBlink group, if any
+        if self._player.names:
+            self._player.step(t, dt)
+            base = {pid: model.GetParamValueById(pid)
+                    for e in self._player.expressions.values() for pid in (p.id for p in e.params)}
+            for pid, value in self._player.values(base).items():
+                model.SetParamById(pid, value)
+        else:
+            model.UpdateExpression(dt)
+        gx, gy = self._gaze.step(t, dt)
+        offsets = motion.idle_offsets(t, self._ranges)
+        for pid, value in motion.gaze_offsets(gx, gy, self._ranges).items():
+            offsets[pid] = offsets.get(pid, 0.0) + value
+        for pid, value in offsets.items():
+            model.AddParamById(pid, value)
+        if self._has_breath:
+            model.SetParamById(motion.BREATH[0], motion.breath_value(t))
+        self._apply_extras(t)
+        model.UpdatePhysics(dt)
+        model.UpdatePose(dt)
+
     def _apply_extras(self, t: float) -> None:
-        """Per-frame additions applied after Update() and before Draw()."""
+        """Fallback blink and the end of a click expression."""
         if self._blink is not None:
             openness = self._blink.openness(t)
             for param in EYE_OPEN_PARAMS:
@@ -282,17 +365,27 @@ class Live2DSource(SpriteSource):
                 self._model.StartRandomMotion(group, 2)
             elif self._groups:
                 self._model.StartRandomMotion(None, 2)
-            elif self._expressions:
+            elif self._player.names:
                 # models without motions: show a random expression for a moment
+                choices = [n for n in self._player.names if n != self._player.current]
+                self._player.play(random.choice(choices or self._player.names),
+                                  time.monotonic() - self._t0, hold=CLICK_EXPRESSION_SECONDS)
+            elif self._expressions:
                 self._model.SetExpression(random.choice(self._expressions))
                 self._expression_until = (time.monotonic() - self._t0
                                           + CLICK_EXPRESSION_SECONDS)
 
     def look_at(self, x: float, y: float) -> None:
         """Make the model look towards a point in canvas pixels."""
-        if self._model is not None:
+        if self._model is None:
+            return
+        if not self._v3:
             with contextlib.suppress(Exception):
                 self._model.Drag(float(x), float(y))
+            return
+        size = self._size if self._size.isValid() else self.natural_size()
+        target = motion.gaze_target(x, y, size.width(), size.height())
+        self._gaze.set_cursor((x, y), target, time.monotonic() - self._t0)
 
     def snapshot(self, path: Path, width: int = 560, height: int = 720) -> bool:
         """Save a head shot of the current frame (for cards when no avatar is given)."""
