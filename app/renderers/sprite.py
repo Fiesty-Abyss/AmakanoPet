@@ -16,6 +16,20 @@ from app.theme import Theme, get_theme
 class SpriteSource:
     """Something that can paint one frame of the pet."""
 
+    #: True when the source animates itself (e.g. Live2D) and needs no breathing/bobbing.
+    self_animated = False
+    #: True when the source wants the cursor position (look_at) every frame.
+    wants_gaze = False
+
+    def on_click(self) -> None:
+        """Called when the pet is clicked."""
+
+    def look_at(self, x: float, y: float) -> None:
+        """Cursor position in canvas pixels (only called when wants_gaze is True)."""
+
+    def close(self) -> None:
+        """Release resources when the source is replaced."""
+
     def natural_size(self) -> QSize:
         raise NotImplementedError
 
@@ -103,6 +117,8 @@ class SpriteRenderer(QObject):
         return self._source
 
     def set_source(self, source: SpriteSource) -> None:
+        if source is not self._source:
+            self._source.close()
         self._source = source
         self.frame_ready.emit()
 
@@ -131,6 +147,7 @@ class SpriteRenderer(QObject):
 
     def hop(self) -> None:
         self._hop_started = self.elapsed()
+        self._source.on_click()
 
     def elapsed(self) -> float:
         return time.monotonic() - self._t0
@@ -139,9 +156,10 @@ class SpriteRenderer(QObject):
     def paint(self, painter: QPainter, rect: QRectF, t: float | None = None) -> None:
         t = self.elapsed() if t is None else t
         scale_px = rect.height() / 360.0
+        self_animated = self._source.self_animated
         if self._animated:
-            stretch = breathing_scale(t)
-            offset = bob_offset(t) * scale_px
+            stretch = 1.0 if self_animated else breathing_scale(t)
+            offset = 0.0 if self_animated else bob_offset(t) * scale_px
             if self._hop_started is not None:
                 hop = hop_offset(t - self._hop_started) * scale_px
                 if hop == 0.0:
