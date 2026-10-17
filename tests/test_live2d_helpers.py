@@ -2,7 +2,7 @@
 
 import json
 
-from PySide6.QtGui import QColor, QImage
+from PySide6.QtGui import QColor, QImage, QPainter
 
 from app.models import ModelLibrary
 from app.renderers import live2d_backend
@@ -41,9 +41,11 @@ def test_blink_fallback_only_when_group_is_empty(tmp_path):
 def test_head_crop_finds_the_top_of_the_figure():
     image = QImage(200, 400, QImage.Format.Format_ARGB32)
     image.fill(QColor(0, 0, 0, 0))
-    for y in range(100, 380):  # a "figure" from y=100 down, centred at x=120
-        for x in range(90, 150):
-            image.setPixelColor(x, y, QColor("#7A5A48"))
+    # a "figure" from y=100 down, centred at x=120. Drawn with QPainter: thousands of
+    # QImage.setPixelColor calls crash PySide6 6.12 on Python 3.10 (None refcount underflow).
+    painter = QPainter(image)
+    painter.fillRect(90, 100, 60, 280, QColor("#7A5A48"))
+    painter.end()
     crop = head_crop(image)
     assert crop.width() == crop.height()
     assert 60 <= crop.width() <= 100
