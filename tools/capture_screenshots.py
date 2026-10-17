@@ -14,6 +14,7 @@ from __future__ import annotations
 
 import argparse
 import os
+import random
 import shutil
 import subprocess
 import sys
@@ -24,7 +25,8 @@ os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
-from PySide6.QtCore import QSettings, QStandardPaths  # noqa: E402
+from PySide6.QtCore import QPoint, QSettings, QStandardPaths  # noqa: E402
+from PySide6.QtGui import QCursor  # noqa: E402
 from PySide6.QtWidgets import QApplication  # noqa: E402
 
 from app.config import SettingsStore  # noqa: E402
@@ -55,8 +57,12 @@ def capture_live2d(app: QApplication, out: Path, model_dir: Path, prefix: str) -
         print("Live2D 模型加载失败：", controller.last_error, file=sys.stderr)
         return 1
     controller.start()
+    window = controller.window
+    # the cursor rests on the pet's face, so it looks at the viewer
+    QCursor.setPos(window.mapToGlobal(QPoint(window.width() // 2, int(window.height() * 0.22))))
     settle(app, 2500)  # physics settles, avatar snapshot is taken
     controller.window.grab().save(str(out / f"pet-live2d-{prefix}.png"))
+    random.seed(0)  # reproducible pick of the click expression / motion
     controller.renderer.hop()  # click: motion or expression
     settle(app, 1200)
     controller.window.grab().save(str(out / f"pet-live2d-{prefix}-click.png"))
