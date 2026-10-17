@@ -1,0 +1,671 @@
+{
+  "schema": 1,
+  "updated": "2026-10-17",
+  "disclaimer": "本资料由 AmakanoPet 维护者根据官方网站、VNDB、Steam 等公开信息用自己的话整理，非官方资料；版权归あざらしそふと及各权利方所有。中文名除标注“官方”的条目外均为常见译名或直译。",
+  "titles": [
+    {
+      "id": "amakano",
+      "name_ja": "アマカノ",
+      "name_en": "Amakano",
+      "name_zh": "甜蜜女友",
+      "released": "2014-12-19",
+      "season": "winter",
+      "setting": "雪国山间的温泉小镇「夜間瀬町」，故事发生在冬天。主角为帮忙祖父母来到这里，住进寄宿处「山ノ内荘」。",
+      "notes": "あざらしそふと的出道作。2016-10-28 推出 Perfect Edition，首次加入 E-mote 立绘动画（不是 Live2D）。",
+      "heroines": [
+        "amakano.sayuki",
+        "amakano.mizuki",
+        "amakano.koharu"
+      ],
+      "links": [
+        {
+          "label": "官方网站",
+          "url": "https://azarashi-soft.nexton-net.jp/amakano/"
+        },
+        {
+          "label": "官方角色页",
+          "url": "https://azarashi-soft.nexton-net.jp/amakano/character/"
+        },
+        {
+          "label": "VNDB",
+          "url": "https://vndb.org/v15679"
+        }
+      ]
+    },
+    {
+      "id": "amakano-ss",
+      "name_ja": "アマカノ～Second Season～",
+      "name_en": "Amakano ~Second Season~",
+      "name_zh": "甜蜜女友 Second Season",
+      "released": "2015-12-25",
+      "season": "winter",
+      "setting": "同样是冬天的雪国温泉街。主角住进安静的旅馆「縁嬉」，与同一天转学来的女孩相遇。",
+      "notes": "与初代同一世界观，登场四位新女主。",
+      "heroines": [
+        "amakano-ss.honami",
+        "amakano-ss.kanade",
+        "amakano-ss.yuzuka",
+        "amakano-ss.ruika"
+      ],
+      "links": [
+        {
+          "label": "官方网站",
+          "url": "https://azarashi-soft.nexton-net.jp/amakano-ss/"
+        },
+        {
+          "label": "官方角色页",
+          "url": "https://azarashi-soft.nexton-net.jp/amakano-ss/character/"
+        },
+        {
+          "label": "VNDB",
+          "url": "https://vndb.org/v17843"
+        }
+      ]
+    },
+    {
+      "id": "amakano-plus",
+      "name_ja": "アマカノ+",
+      "name_en": "Amakano+",
+      "name_zh": "甜蜜女友+",
+      "released": "2016-12-22",
+      "season": "summer",
+      "setting": "初代的续篇（FD），分为两人外出旅行的「夏篇」和一直写到结婚的「未来篇」。",
+      "notes": "加入纪念日事件（生日、圣诞等特定日期启动会触发）和自由组合背景与立绘的「アマカノシステム」。",
+      "heroines": [
+        "amakano.sayuki",
+        "amakano.mizuki",
+        "amakano.koharu"
+      ],
+      "links": [
+        {
+          "label": "官方网站",
+          "url": "https://azarashi-soft.nexton-net.jp/amakano-plus/"
+        },
+        {
+          "label": "VNDB",
+          "url": "https://vndb.org/v19810"
+        }
+      ]
+    },
+    {
+      "id": "amakano-ss-plus",
+      "name_ja": "アマカノ～Second Season～+",
+      "name_en": "Amakano ~Second Season~+",
+      "name_zh": "甜蜜女友 Second Season+",
+      "released": "2017-12-22",
+      "season": "summer",
+      "setting": "Second Season 的续篇（FD），补上本篇没写到的夏天（泳装、浴衣），并写到婚后生活。",
+      "notes": "四位女主全部回归。",
+      "heroines": [
+        "amakano-ss.honami",
+        "amakano-ss.kanade",
+        "amakano-ss.yuzuka",
+        "amakano-ss.ruika"
+      ],
+      "links": [
+        {
+          "label": "官方网站",
+          "url": "https://azarashi-soft.nexton-net.jp/amakano-ss-plus/"
+        },
+        {
+          "label": "VNDB",
+          "url": "https://vndb.org/v21675"
+        }
+      ]
+    },
+    {
+      "id": "amakano2",
+      "name_ja": "アマカノ2",
+      "name_en": "Amakano 2",
+      "name_zh": "甜蜜女友 2",
+      "released": "2020-04-24",
+      "season": "autumn",
+      "setting": "古都风情的城市，有茶屋街「ながれ茶屋町」、喫茶店「緋衣亭」和「白鷺学園」，季节从秋到冬。",
+      "notes": "2022-03-25 推出 Perfect Edition，E-mote 立绘在眨眼、口型之外加入了身体动作。",
+      "heroines": [
+        "amakano2.chitose",
+        "amakano2.yuuhi",
+        "amakano2.rei"
+      ],
+      "links": [
+        {
+          "label": "官方网站",
+          "url": "https://azarashi-soft.nexton-net.jp/amakano2/"
+        },
+        {
+          "label": "Perfect Edition",
+          "url": "https://azarashi-soft.nexton-net.jp/amakano2-pe/"
+        },
+        {
+          "label": "VNDB",
+          "url": "https://vndb.org/v26307"
+        }
+      ]
+    },
+    {
+      "id": "amakano2-plus",
+      "name_ja": "アマカノ2+",
+      "name_en": "Amakano 2+",
+      "name_zh": "甜蜜女友 2+",
+      "released": "2023-04-28",
+      "season": "summer",
+      "setting": "『アマカノ2』约半年后的夏天，系列第一次以“夏天的学园”为舞台，有夏日祭、海边和修学旅行。",
+      "notes": "追加新女主「咲來」，立绘动作升级为 Ver2.0。",
+      "heroines": [
+        "amakano2.yuuhi",
+        "amakano2.chitose",
+        "amakano2.rei",
+        "amakano2.sara"
+      ],
+      "links": [
+        {
+          "label": "官方网站",
+          "url": "https://azarashi-soft.nexton-net.jp/amakano2-plus/"
+        },
+        {
+          "label": "VNDB",
+          "url": "https://vndb.org/v31813"
+        }
+      ]
+    },
+    {
+      "id": "amakano3",
+      "name_ja": "アマカノ3",
+      "name_en": "Amakano 3",
+      "name_zh": "甜蜜女友 3",
+      "released": "2025-09-26",
+      "season": "summer",
+      "setting": "山阴地区海山环绕的夏日温泉街「日和山温泉」。主角代替住院的祖母，协助管理由旅馆改建的女子宿舍「楽々浦寮」。",
+      "notes": "官方说明与前作没有直接剧情联系。Shiravune 已宣布 Steam 版（含官方简体中文），发售日待定。截至 2026-10 尚未发表「アマカノ3+」。",
+      "heroines": [
+        "amakano3.kanon",
+        "amakano3.shion",
+        "amakano3.sayumi",
+        "amakano3.touka",
+        "amakano3.scarlet"
+      ],
+      "links": [
+        {
+          "label": "官方网站",
+          "url": "https://azarashi-soft.nexton-net.jp/amakano3/"
+        },
+        {
+          "label": "Steam",
+          "url": "https://store.steampowered.com/app/4932930/"
+        },
+        {
+          "label": "VNDB",
+          "url": "https://vndb.org/v50215"
+        }
+      ]
+    }
+  ],
+  "heroines": [
+    {
+      "id": "amakano.sayuki",
+      "name_ja": "高社 紗雪",
+      "reading": "たかやしろ さゆき",
+      "romaji": "Takayashiro Sayuki",
+      "name_zh": "高社纱雪",
+      "name_zh_official": false,
+      "school_year": "2 年级（同班）",
+      "birthday": "03-05",
+      "height_cm": 156,
+      "blood_type": "A",
+      "cv": "木村あやか",
+      "cv_romaji": "Kimura Ayaka",
+      "traits": [
+        "巫女",
+        "大和抚子",
+        "认真",
+        "爱干净",
+        "怕生"
+      ],
+      "summary": "镇上高社神社家的女儿，被大家称作“巫女姬”。性格认真、温婉，打扫起来一丝不苟。也正因为被特别看待，她不太会和同龄人自然地聊天，一直为此苦恼。",
+      "amae": "交往后会努力笨拙地撒娇，也很乐意照顾对方。",
+      "color": "#3A3550",
+      "initial": "紗",
+      "sources": [
+        "https://azarashi-soft.nexton-net.jp/amakano/character/",
+        "https://vndb.org/c23305"
+      ]
+    },
+    {
+      "id": "amakano.mizuki",
+      "name_ja": "上林 聖",
+      "reading": "かんばやし みずき",
+      "romaji": "Kanbayashi Mizuki",
+      "name_zh": "上林圣",
+      "name_zh_official": false,
+      "school_year": "3 年级（学姐）",
+      "birthday": "12-16",
+      "height_cm": 165,
+      "blood_type": "B",
+      "cv": "真中海",
+      "cv_romaji": "Manaka Umi",
+      "traits": [
+        "同住学姐",
+        "爱捉弄人",
+        "悠闲",
+        "异色瞳",
+        "靠谱"
+      ],
+      "summary": "和主角同住在寄宿处「山ノ内荘」的学姐，在学园里很受欢迎。喜欢慢悠悠地喝茶、爱开玩笑，认真商量事情时却很可靠。临近毕业，她不太想改变现状。",
+      "amae": "平时像姐姐一样逗人，二人独处时反而像孩子一样黏人。",
+      "color": "#8A6A55",
+      "initial": "聖",
+      "sources": [
+        "https://azarashi-soft.nexton-net.jp/amakano/character/",
+        "https://vndb.org/c23306"
+      ]
+    },
+    {
+      "id": "amakano.koharu",
+      "name_ja": "星川 こはる",
+      "reading": "ほしかわ こはる",
+      "romaji": "Hoshikawa Koharu",
+      "name_zh": "星川小春",
+      "name_zh_official": false,
+      "school_year": "1 年级（学妹）",
+      "birthday": "11-06",
+      "height_cm": 152,
+      "blood_type": "O",
+      "cv": "秋野花",
+      "cv_romaji": "Akino Hana",
+      "traits": [
+        "甜品店看板娘",
+        "元气",
+        "亲人",
+        "和果子达人",
+        "有点冒失"
+      ],
+      "summary": "温泉街甜品店「こはるびより」的看板娘。像小狗一样亲近人，开心或难过都会用全身表现出来。不擅长动脑，但做和果子的手艺一流。",
+      "amae": "高兴起来就会扑上来抱住，是全方位黏人的类型。",
+      "color": "#A0703C",
+      "initial": "こ",
+      "sources": [
+        "https://azarashi-soft.nexton-net.jp/amakano/character/",
+        "https://vndb.org/c23307"
+      ]
+    },
+    {
+      "id": "amakano-ss.honami",
+      "name_ja": "一ノ瀬 穂波",
+      "reading": "いちのせ ほなみ",
+      "romaji": "Ichinose Honami",
+      "name_zh": "一之濑穗波",
+      "name_zh_official": false,
+      "school_year": "1 年级（同日转学）",
+      "birthday": "06-29",
+      "height_cm": 162,
+      "blood_type": "A",
+      "cv": "波奈束風景",
+      "cv_romaji": "Hanazuka Fuukei",
+      "traits": [
+        "优等生",
+        "嘴硬",
+        "怕寂寞",
+        "纯情"
+      ],
+      "summary": "和主角同一天转学来的学妹。表面上是一丝不苟的优等生，其实一直忍着没向父母撒娇，不知道怎么和周围的人相处，只好用冷淡来掩饰害羞。",
+      "amae": "坦率起来之后会变成跑到家里来的撒娇鬼。",
+      "color": "#8C5A3C",
+      "initial": "穂",
+      "sources": [
+        "https://azarashi-soft.nexton-net.jp/amakano-ss/character/",
+        "https://vndb.org/c35679"
+      ]
+    },
+    {
+      "id": "amakano-ss.kanade",
+      "name_ja": "沓野 奏",
+      "reading": "くつの かなで",
+      "romaji": "Kutsuno Kanade",
+      "name_zh": "沓野奏",
+      "name_zh_official": false,
+      "school_year": "1 年级（同住学妹）",
+      "birthday": "10-17",
+      "height_cm": 151,
+      "blood_type": "AB",
+      "cv": "桃山いおん",
+      "cv_romaji": "Momoyama Ion",
+      "traits": [
+        "温柔",
+        "小恶魔",
+        "努力复健",
+        "擅长体察情绪"
+      ],
+      "summary": "坐着轮椅、借住在祖父母经营的旅馆「縁嬉」一边温泉疗养的学妹。看起来像深闺千金，其实爱开玩笑、有点小恶魔，对帮助过她的人总是心怀感谢，一直在努力复健。",
+      "amae": "会用“お兄さま”称呼主角，轻松地撒娇、恶作剧。",
+      "color": "#E58FB0",
+      "initial": "奏",
+      "sources": [
+        "https://azarashi-soft.nexton-net.jp/amakano-ss/character/",
+        "https://vndb.org/c35680"
+      ]
+    },
+    {
+      "id": "amakano-ss.yuzuka",
+      "name_ja": "高社 雪静",
+      "reading": "たかやしろ ゆずか",
+      "romaji": "Takayashiro Yuzuka",
+      "name_zh": "高社雪静",
+      "name_zh_official": false,
+      "school_year": "2 年级（同班）",
+      "birthday": "02-09",
+      "height_cm": 154,
+      "blood_type": "B",
+      "cv": "松田理沙",
+      "cv_romaji": "Matsuda Risa",
+      "traits": [
+        "图书委员",
+        "害羞",
+        "爱看书",
+        "爱幻想",
+        "容易哭"
+      ],
+      "summary": "被称为“图书馆的座敷童子”的图书委员，高社紗雪的妹妹。内向、容易脸红，一着急说话就打结，所以有时会拿笔记本写字交流。其实感情丰富，很想和人慢慢聊天。",
+      "amae": "把想说的话写在本子上，一点点表达心意。",
+      "color": "#6B4A3A",
+      "initial": "雪",
+      "sources": [
+        "https://azarashi-soft.nexton-net.jp/amakano-ss/character/",
+        "https://vndb.org/c35681"
+      ]
+    },
+    {
+      "id": "amakano-ss.ruika",
+      "name_ja": "硯川・ユーフラジー・涙香",
+      "reading": "すずりかわ ユーフラジー るいか",
+      "romaji": "Suzurikawa Euphrasie Ruika",
+      "name_zh": "砚川·Euphrasie·泪香",
+      "name_zh_official": false,
+      "school_year": "3 年级（学生会长）",
+      "birthday": "04-14",
+      "height_cm": 167,
+      "blood_type": "O",
+      "cv": "一色ヒカル",
+      "cv_romaji": "Isshiki Hikaru",
+      "traits": [
+        "学生会长",
+        "有魅力",
+        "行动派",
+        "意外迷糊"
+      ],
+      "summary": "总把学生放在心上的学生会长，行动力强又有号召力。其实有点迷糊，靠机灵和努力弥补；看似喜欢热闹，其实很爱做细致的小手工。官方也简写作「硯川・e・涙香」。",
+      "amae": "在“酷酷的学姐”和“没自信的迷糊学姐”之间切换，私下很依赖人。",
+      "color": "#C9CED6",
+      "initial": "涙",
+      "sources": [
+        "https://azarashi-soft.nexton-net.jp/amakano-ss/character/",
+        "https://vndb.org/c35682"
+      ]
+    },
+    {
+      "id": "amakano2.chitose",
+      "name_ja": "蔦町 ちとせ",
+      "reading": "つたまち ちとせ",
+      "romaji": "Tsutamachi Chitose",
+      "name_zh": "茑町千岁",
+      "name_zh_official": false,
+      "school_year": "3 年级（2+：白鷺大学 1 年级）",
+      "birthday": "08-07",
+      "height_cm": 153,
+      "blood_type": "O",
+      "cv": "歩サラ",
+      "cv_romaji": "Ayumu Sara",
+      "traits": [
+        "青梅竹马",
+        "姐姐系",
+        "喫茶店看板娘",
+        "爱照顾人",
+        "擅长做饭"
+      ],
+      "summary": "住在隔壁、比主角大一岁的青梅竹马，也是喫茶店「緋衣亭」的看板娘。性格温和又爱照顾人，在学园里男女生都喜欢她，一直把主角当弟弟一样疼爱。",
+      "amae": "喜欢拥抱和摸头（官方「甘えスキル」：抱きしめ・なでなで）。",
+      "color": "#E8C46A",
+      "initial": "ち",
+      "sources": [
+        "https://azarashi-soft.nexton-net.jp/amakano2/",
+        "https://azarashi-soft.nexton-net.jp/amakano2-plus/",
+        "https://vndb.org/c84585"
+      ]
+    },
+    {
+      "id": "amakano2.yuuhi",
+      "name_ja": "黒姫 結灯",
+      "reading": "くろひめ ゆうひ",
+      "romaji": "Kurohime Yuuhi",
+      "name_zh": "黑姬结灯",
+      "name_zh_official": false,
+      "school_year": "2 年级（2+：3 年级）",
+      "birthday": "01-15",
+      "height_cm": 158,
+      "blood_type": "AB",
+      "cv": "明羽杏子",
+      "cv_romaji": "Akabane Kyouko",
+      "traits": [
+        "表里两面",
+        "自我评价低",
+        "爱睡觉",
+        "字很漂亮"
+      ],
+      "summary": "在新干线上偶然坐在主角旁边的少女，后来成了同班同学。外表认真温柔，私下却总习惯否定自己。恋爱让她慢慢学会喜欢自己，但仍有点在意别人的反应。",
+      "amae": "想一直待在一起，撒娇方式直接又亲昵。",
+      "color": "#7A4A3A",
+      "initial": "結",
+      "sources": [
+        "https://azarashi-soft.nexton-net.jp/amakano2/",
+        "https://azarashi-soft.nexton-net.jp/amakano2-plus/",
+        "https://vndb.org/c84586"
+      ]
+    },
+    {
+      "id": "amakano2.rei",
+      "name_ja": "氷見山 玲",
+      "reading": "ひみやま れい",
+      "romaji": "Himiyama Rei",
+      "name_zh": "冰见山玲",
+      "name_zh_official": false,
+      "school_year": "1 年级（2+：2 年级）",
+      "birthday": "03-29",
+      "height_cm": 163,
+      "blood_type": "B",
+      "cv": "神代岬",
+      "cv_romaji": "Kamishiro Misaki",
+      "traits": [
+        "表妹",
+        "冷静",
+        "我行我素",
+        "讲究合理",
+        "会弹钢琴"
+      ],
+      "summary": "为了上学方便，住进主角房间的表妹。性格冷静、做事讲究合理，过去总是独来独往；和主角交往后开始对周围产生兴趣，也交到了朋友。",
+      "amae": "靠气味和触碰来“确认”对方，是她独特的撒娇方式。",
+      "color": "#8E7CC3",
+      "initial": "玲",
+      "sources": [
+        "https://azarashi-soft.nexton-net.jp/amakano2/",
+        "https://azarashi-soft.nexton-net.jp/amakano2-plus/",
+        "https://vndb.org/c84587"
+      ]
+    },
+    {
+      "id": "amakano2.sara",
+      "name_ja": "咲來",
+      "reading": "さら",
+      "romaji": "Sara (Jigokudani Sara)",
+      "name_zh": "咲来",
+      "name_zh_official": false,
+      "school_year": "1 年级（2+ 新生）",
+      "birthday": "07-15",
+      "height_cm": 155,
+      "blood_type": "A",
+      "cv": "游木凛々",
+      "cv_romaji": "Yuuki Rinrin",
+      "traits": [
+        "开朗学妹",
+        "自认配角",
+        "吐槽担当",
+        "爱吃"
+      ],
+      "summary": "『アマカノ2+』的新女主，开朗元气，和谁都聊得来；可偶尔也会冷静地吐槽，并且总觉得自己是“配角”，容易一开始就放弃。兴趣是做饭、边走边吃和发呆。VNDB 记载其姓氏为「地獄谷」。",
+      "amae": "喜欢被摸头（官方「甘えスキル」：なでなでされる）。",
+      "color": "#B9BCC7",
+      "initial": "咲",
+      "sources": [
+        "https://azarashi-soft.nexton-net.jp/amakano2-plus/",
+        "https://vndb.org/c116373"
+      ]
+    },
+    {
+      "id": "amakano3.kanon",
+      "name_ja": "柳木 叶夢",
+      "reading": "やなぎ かのん",
+      "romaji": "Yanagi Kanon",
+      "name_zh": "柳木叶梦",
+      "name_zh_official": true,
+      "school_year": "1 年级（学妹）",
+      "birthday": "12-19",
+      "height_cm": 162,
+      "blood_type": "O",
+      "cv": "星野うちゆ",
+      "cv_romaji": "Hoshino Uchiyu",
+      "traits": [
+        "辣妹",
+        "社交达人",
+        "温泉小町",
+        "其实纯情",
+        "姐控"
+      ],
+      "summary": "比主角低一届的学妹，虽然不擅长念书，脑子却转得快，很会和人打交道。她担任日和山温泉的宣传“温泉小町”，还当读者模特，在同龄人中小有名气。外表是辣妹，其实很纯情，非常喜欢姐姐。",
+      "amae": "爱贴上来逗人，但被主动进攻时反而会招架不住。",
+      "color": "#E8925A",
+      "initial": "叶",
+      "sources": [
+        "https://azarashi-soft.nexton-net.jp/amakano3/",
+        "https://store.steampowered.com/app/4932930/",
+        "https://vndb.org/c136802"
+      ]
+    },
+    {
+      "id": "amakano3.shion",
+      "name_ja": "柳木 詩夢",
+      "reading": "やなぎ しおん",
+      "romaji": "Yanagi Shion",
+      "name_zh": "柳木诗梦",
+      "name_zh_official": true,
+      "school_year": "2 年级（同年级）",
+      "birthday": "11-28",
+      "height_cm": 155,
+      "blood_type": "AB",
+      "cv": "明羽杏子",
+      "cv_romaji": "Akabane Kyouko",
+      "traits": [
+        "毒舌",
+        "自我评价低",
+        "认真",
+        "好姐姐",
+        "巫女打工"
+      ],
+      "summary": "叶梦的姐姐，性格和妹妹完全相反：认真却缺乏自信，说话不留情面，在班上和同学有些距离。嘴上尖刻，其实很关心妹妹；对突然住进宿舍的主角充满戒心，却也会公正地看待他的行动。",
+      "amae": "不会用语言撒娇，而是用态度表现依赖。",
+      "color": "#7A5A48",
+      "initial": "詩",
+      "sources": [
+        "https://azarashi-soft.nexton-net.jp/amakano3/",
+        "https://store.steampowered.com/app/4932930/",
+        "https://vndb.org/c136807"
+      ]
+    },
+    {
+      "id": "amakano3.sayumi",
+      "name_ja": "鴻 さゆみ",
+      "reading": "おおとり さゆみ",
+      "romaji": "Ootori Sayumi",
+      "name_zh": "鸿纱由美",
+      "name_zh_official": true,
+      "school_year": "2 年级（同班）",
+      "birthday": "05-01",
+      "height_cm": 157,
+      "blood_type": "A",
+      "cv": "実羽ゆうき",
+      "cv_romaji": "Mihane Yuuki",
+      "traits": [
+        "宿舍领袖",
+        "表里两面",
+        "策士",
+        "写小说"
+      ],
+      "summary": "对谁都温柔、很会照顾人的同班同学，也是宿舍的协调者。在人前扮演喜欢可爱东西的优等生，私下其实冷静又有计算。被主角发现另一面后，两人成了共享秘密的“共犯”。",
+      "amae": "喜欢被轻声细语或紧紧抱住的亲密距离。",
+      "color": "#2F3540",
+      "initial": "さ",
+      "sources": [
+        "https://azarashi-soft.nexton-net.jp/amakano3/",
+        "https://store.steampowered.com/app/4932930/",
+        "https://vndb.org/c136804"
+      ]
+    },
+    {
+      "id": "amakano3.touka",
+      "name_ja": "御所院 冬樺",
+      "reading": "ごしょいん とうか",
+      "romaji": "Goshoin Touka",
+      "name_zh": "御所院冬桦",
+      "name_zh_official": true,
+      "school_year": "2 年级（转学生）",
+      "birthday": "09-15",
+      "height_cm": 160,
+      "blood_type": "A",
+      "cv": "三咲里奈",
+      "cv_romaji": "Misaki Rina",
+      "traits": [
+        "财阀千金",
+        "不谙世事",
+        "积极",
+        "爱游泳",
+        "大小姐口吻"
+      ],
+      "summary": "海豹财阀的千金，为了作为继承人更了解社会，从名门女子学院转来御所院学园并入住宿舍。不谙世事、常闹出奇怪的误会，但积极开朗、讨人喜欢，很依赖会照顾人的主角。",
+      "amae": null,
+      "color": "#E9E6EF",
+      "initial": "冬",
+      "sources": [
+        "https://azarashi-soft.nexton-net.jp/amakano3/",
+        "https://store.steampowered.com/app/4932930/",
+        "https://vndb.org/c136805"
+      ]
+    },
+    {
+      "id": "amakano3.scarlet",
+      "name_ja": "スカーレット・斑鳩・ウィスタリア",
+      "reading": "スカーレット いかるが ウィスタリア",
+      "romaji": "Scarlet Ikaruga Wisteria",
+      "name_zh": "史卡蕾特・斑鸠・威斯塔利亚",
+      "name_zh_official": true,
+      "school_year": "3 年级（学姐）",
+      "birthday": "08-10",
+      "height_cm": 169,
+      "blood_type": "B",
+      "cv": "柚木つばめ",
+      "cv_romaji": "Yuzuki Tsubame",
+      "traits": [
+        "女仆",
+        "金发碧眼",
+        "沉默寡言",
+        "厨艺毁灭级",
+        "爱画画"
+      ],
+      "summary": "主角祖母的养女，比主角高一届的学姐。在学园以外总穿着女仆装，安静得让人看不透在想什么。负责宿舍的打扫和管理，做饭却完全不行，于是请主角来帮忙，并称呼他为“主人”。",
+      "amae": "想为对方做点什么；会轻轻叠上手背来传达心意。",
+      "color": "#E9CF7A",
+      "initial": "ス",
+      "sources": [
+        "https://azarashi-soft.nexton-net.jp/amakano3/",
+        "https://store.steampowered.com/app/4932930/",
+        "https://vndb.org/c136806"
+      ]
+    }
+  ]
+}
