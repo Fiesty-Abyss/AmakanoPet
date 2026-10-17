@@ -27,6 +27,12 @@
 - 请勿使用游戏解包文件，也不要分发他人的素材。因用户自备素材产生的问题由用户自行负责。
 - 本项目不提供、也不会加入对声优声音的克隆或合成功能。
 
+## Live2D
+
+- 可选的 Live2D 功能依赖第三方库 [live2d-py](https://github.com/Arkueid/live2d-py)（MIT），它内置 Live2D Cubism SDK。其中的 Cubism Core 适用 Live2D Proprietary Software License，由用户自行安装，本仓库不附带。
+- 「Live2D」是 Live2D Inc. 的商标。本项目与 Live2D Inc. 无关。
+- 开发测试使用的 Live2D 官方免费示例模型只在测试时下载，适用 Live2D Free Material License，不包含在本仓库中。
+
 ## 权利人联系
 
 如果你是相关权利人，认为本项目的任何内容不妥，请通过 [GitHub Issues](https://github.com/Fiesty-Abyss/AmakanoPet/issues) 联系，我们会尽快处理。
