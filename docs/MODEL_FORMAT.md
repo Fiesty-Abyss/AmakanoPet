@@ -162,12 +162,15 @@ models/
 
 ### 行为
 
-- 模型自带的呼吸、眨眼、物理和 Idle 动作由 Cubism SDK 驱动，AmakanoPet 不再叠加呼吸和浮动效果。
+- Idle 动作、`EyeBlink` 参数组的眨眼、物理（`physics3.json`）和部件切换（`pose3.json`）由 Cubism SDK 驱动；AmakanoPet 不叠加精灵模型的浮动效果。
+- 呼吸只做轻微摆动：`ParamBreath` 0 – 1，头部 `ParamAngleX/Y/Z` 约 ±10% / ±7% / ±7% 参数范围，身体 `ParamBodyAngleX` 约 ±15%（Cubism 示例框架的默认值是 ±15° / ±8° / ±10°，对桌宠来说太大）。
+- 视线跟随鼠标：头部 `ParamAngleX` 最多 40%、`ParamAngleY` 最多 30% 参数范围，身体 25%，眼珠 60% / 50%；鼠标离得再远也不会转到极限，也不会因为视线而歪头（`ParamAngleZ`）。鼠标停住 4 秒后会重新看向前方。只对 Cubism 3+ 模型生效，Cubism 2 模型仍使用 SDK 的拖拽跟随。
+- 表情（`*.exp3.json`）由 AmakanoPet 按每个参数的 `Blend`（`Add` / `Multiply` / `Overwrite`）在动作结果之上混合，并按 `FadeInTime` / `FadeOutTime`（默认 1 秒）渐入、渐出。
+- 物理在视线和呼吸之后计算，所以头发会跟着头部摆动。
 - 单击桌宠时随机播放 `TapBody` 动作组；没有这个动作组时，从全部动作中随机挑选。
-- 视线会跟随鼠标（需要模型有标准的角度参数）。
 - 模型加载失败时自动换回糯糯，并在「我的模型」页显示原因。
 - 模型没有定义 `EyeBlink` 参数组、但有 `ParamEyeLOpen` / `ParamEyeROpen` 时，由 AmakanoPet 驱动眨眼。
-- 模型没有任何动作时，单击会随机显示模型自带的表情（`*.exp3.json`），2.5 秒后恢复。
+- 模型没有任何动作时，单击会随机显示模型自带的另一个表情（`*.exp3.json`），保持 2.5 秒后渐出。
 - 没有 `avatar` 时，首次显示后会自动截取头部作为乐园头像，缓存在系统缓存目录（如 Linux 的 `~/.cache/AmakanoPet/live2d-avatars/`）。
 - 贴图很大（例如 8192 × 8192）的模型首次加载可能需要几秒，显卡需要支持对应的贴图尺寸。
 
