@@ -1,0 +1,4 @@
+# Optional: Live2D (Cubism) support for user-supplied models. Python 3.11+.
+# live2d-py is MIT-licensed and bundles the Live2D Cubism SDK; its Cubism Core
+# is covered by the Live2D Proprietary Software License.
+live2d-py>=1.0; python_version >= "3.11"
